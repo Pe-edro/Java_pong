@@ -8,7 +8,7 @@ public class Janela extends JFrame{
         setResizable(false);
         setLocationRelativeTo(null);
 
-        Janela campo = new Janela();
+        Campo campo = new Campo();
         add(campo);
 
         setVisible(true);
