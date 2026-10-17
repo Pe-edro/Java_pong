@@ -1,0 +1,79 @@
+# Pong em Java - Programação Orientada a Objetos
+
+Projeto desenvolvido para a disciplina de **Técnicas de Programação**, sob orientação do **Prof. Renato Pierre**.
+
+Este repositório contém uma implementação do clássico jogo **Pong**, desenvolvida em Java utilizando a biblioteca gráfica `Swing`. O objetivo do projeto é consolidar na prática os conceitos fundamentais da **Programação Orientada a Objetos (POO)**.
+
+---
+
+## Conceitos de POO Aplicados
+
+### O que são Classes e Objetos?
+
+* **Classe:** Funciona como um **molde ou projeto** que define as características (atributos) e os comportamentos (métodos) que determinado elemento do programa terá.
+  * *Exemplo no projeto:* A classe `Raquete` define que qualquer raquete terá largura, altura, posição $(x, y)$ e capacidade de se mover.
+* **Objeto:** É a **instanciação (criação concreta)** baseada em uma classe.
+  * *Exemplo no projeto:* Com base na classe `Raquete`, criamos dois objetos distintos na memória: `jogador` (raquete da esquerda) e `computador` (raquete da direita).
+
+---
+
+## Estrutura do Código e Componentes Principais
+
+O projeto é dividido em classes com responsabilidades bem definidas:
+
+### 1. `Main.java`
+Ponto de entrada da aplicação.
+* Exibe a caixa de diálogo inicial (`JOptionPane`) para o jogador escolher a dificuldade (**Fácil** ou **Difícil**).
+* Utiliza `SwingUtilities.invokeLater` para garantir a inicialização segura da interface gráfica dentro da thread do Swing.
+
+### 2. `JanelaJogo.java` (extende `JFrame`)
+Gerencia a janela principal da aplicação.
+* Configura o título, o fechamento da aplicação, o tamanho e a centralização da tela.
+* Instancia e adiciona o painel do campo de jogo (`CampoJogo`).
+
+### 3. `CampoJogo.java` (extende `JPanel`, implementa `KeyListener`)
+O "coração" do jogo, responsável pela lógica do loop e renderização.
+* **Loop de Animação:** Utiliza um `javax.swing.Timer` executado a cada ~16ms (~60 FPS) para atualizar o estado do jogo e redesenhar a tela (`repaint()`).
+* **Controle do Jogador:** Captura as teclas `W` e `S` via `KeyListener`.
+* **Inteligência Artificial (IA):** Controla a raquete do computador ajustando sua posição $y$ conforme a posição da bola, aplicando uma margem de tolerância. A velocidade da IA varia conforme a dificuldade escolhida.
+* **Física e Colisões:** Detecta o choque da bola com o teto, chão e raquetes (utilizando a interseção de áreas com a classe `Rectangle`). Aplica **aceleração progressiva** na bola a cada rebatida.
+* **Controle de Placar e Reinício:** Detecta o momento do ponto, atualiza o placar e encerra a partida quando um jogador atinge 10 pontos.
+
+### 4. `Bola.java`
+Modela a esfera do jogo.
+* Armazena coordenadas, diâmetro e vetores de velocidade (`velX`, `velY`).
+* **Funções-chave:** `mover()`, `rebaterTetoChao()`, `inverterVelX()`, `acelerar()` (aumenta a velocidade ao rebater nas raquetes) e `reiniciar()` (reposiciona a bola no centro após um ponto).
+
+### 5. `Raquete.java`
+Modela as raquetes dos jogadores.
+* Controla a movimentação vertical e restringe os limites para que a raquete não saia da tela (`aplicarLimites()`).
+* Fornece o método `getLimites()`, retornando uma caixa de colisão (`Rectangle`).
+
+### 6. `Placar.java`
+Encapsula o estado da pontuação.
+* Armazena os pontos do jogador e do computador, garantindo que os dados fiquem protegidos (encapsulamento) e sejam alterados apenas através dos métodos `marcarPontoJogador()`, `marcarPontoComputador()` e `zerar()`.
+
+---
+
+##  Como Executar o Projeto
+
+1. Certifique-se de ter o **JDK (Java Development Kit)** instalado (versão 8 ou superior).
+2. Clone este repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/seu-repositorio.git
+   ```
+3. Acesse o diretório do projeto e compile os arquivos:
+   ```bash
+   javac *.java
+   ```
+4. Execute a classe principal:
+   ```bash
+   java Main
+   ```
+
+---
+
+##  Controles
+
+* **W:** Move a raquete para cima.
+* **S:** Move a raquete para baixo.
