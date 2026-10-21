@@ -1,11 +1,18 @@
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
+/**
+ * Representa a bola do jogo Pong.
+ * Gerencia posicionamento, velocidade, limites de tela, aceleração e detecção de colisões.
+ */
 public class Bola {
     private int x, y;
     private final int diametro;
     private int velX, velY;
     private final int velInicialX, velInicialY;
+
+    // Objeto Rectangle reutilizável para otimizar desempenho evitando alocações excessivas na memória
+    private final Rectangle limites = new Rectangle();
 
     public Bola(int x, int y, int diametro, int velX, int velY) {
         this.x = x;
@@ -36,34 +43,36 @@ public class Bola {
         this.velX = -this.velX;
     }
 
-public void acelerar() {
-        int limiteX = velInicialX * 3;
-        int limiteY = velInicialY * 3;
+    /**
+     * Acelera a velocidade da bola a cada rebatida nas raquetes.
+     * Garante incremento efetivo (mínimo de 1 unidade) respeitando o limite máximo para manter a jogabilidade fluida.
+     */
+    public void acelerar() {
+        int limiteMaxX = 16;
+        int limiteMaxY = 12;
 
-        // Calcula a nova velocidade acrescida (+15%)
-        int novaVelX = (int)(this.velX * 1.15);
-        int novaVelY = (int)(this.velY * 1.15);
+        int sinalX = (velX >= 0) ? 1 : -1;
+        int sinalY = (velY >= 0) ? 1 : -1;
 
-        // Aplica o limitador respeitando a direção (sinal positivo/negativo)
-        if (Math.abs(novaVelX) <= limiteX) {
-            this.velX = novaVelX;
-        } else {
-            this.velX = (this.velX > 0) ? limiteX : -limiteX;
-        }
+        int absX = Math.abs(velX);
+        int absY = Math.abs(velY);
 
-        if (Math.abs(novaVelY) <= limiteY) {
-            this.velY = novaVelY;
-        } else {
-            this.velY = (this.velY > 0) ? limiteY : -limiteY;
-        }
+        // Aumenta a velocidade horizontal em pelo menos 1 pixel ou 10%
+        int novoAbsX = Math.min(limiteMaxX, Math.max(absX + 1, (int) Math.round(absX * 1.10)));
+        // Aumenta ligeiramente a velocidade vertical se necessário
+        int novoAbsY = Math.min(limiteMaxY, Math.max(absY, (int) Math.round(absY * 1.05)));
+
+        this.velX = novoAbsX * sinalX;
+        this.velY = novoAbsY * sinalY;
     }
 
     public void reiniciar(int larguraCampo, int alturaCampo) {
         this.x = (larguraCampo - diametro) / 2;
         this.y = (alturaCampo - diametro) / 2;
-        // Restaura a velocidade original para o novo saque
+        // Inverte a direção de saída horizontal para o saque alternar
         this.velX = (velX > 0) ? -velInicialX : velInicialX;
-        this.velY = velInicialY;
+        // Define uma saída vertical dinâmica para o saque
+        this.velY = (Math.random() < 0.5 ? -1 : 1) * velInicialY;
     }
 
     public void desenhar(Graphics g) {
@@ -71,16 +80,20 @@ public void acelerar() {
     }
 
     public Rectangle getLimites() {
-        return new Rectangle(x, y, diametro, diametro);
+        limites.setBounds(x, y, diametro, diametro);
+        return limites;
     }
 
     public int getX() { return x; }
+    public void setX(int x) { this.x = x; }
+
     public int getY() { return y; }
+    public void setY(int y) { this.y = y; }
+
     public int getDiametro() { return diametro; }
     public int getVelX() { return velX; }
-    public int getVelY() { return velY; }
-
-    // Métodos novos para permitir a aceleração
     public void setVelX(int velX) { this.velX = velX; }
+
+    public int getVelY() { return velY; }
     public void setVelY(int velY) { this.velY = velY; }
 }
